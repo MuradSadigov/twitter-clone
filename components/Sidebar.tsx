@@ -1,11 +1,15 @@
-import Image from "next/image";
+import TweetButton from "./UI/SidebarComponents/TweetButton";
+import AccountInfo from "./UI/SidebarComponents/AccountInfo";
+import SidebarLinks from "./UI/SidebarComponents/SidebarLinks";
+import MediaLogo from "./UI/SidebarComponents/MediaLogo";
 
 const Sidebar = () => {
   return (
     <div className="hidden sm:flex flex-col items-center xl:items-start xl:w-[340px] p-2 fixed h-full">
-      <div className="flex items-center justify-center w-14 h-14 hoverAnimation p-0 xl:ml-24">
-        <Image src="https://rb.gy/ogau5a" alt={""} width={30} height={30} />
-      </div>
+      <MediaLogo />
+      <SidebarLinks />
+      <TweetButton />
+      <AccountInfo />
     </div>
   );
 };
