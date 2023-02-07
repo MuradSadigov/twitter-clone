@@ -1,7 +1,7 @@
-import TweetButton from "./UI/SidebarComponents/TweetButton";
-import AccountInfo from "./UI/SidebarComponents/AccountInfo";
-import SidebarLinks from "./UI/SidebarComponents/SidebarLinks";
-import MediaLogo from "./UI/SidebarComponents/MediaLogo";
+import TweetButton from "./SidebarComponents/TweetButton";
+import AccountInfo from "./SidebarComponents/AccountInfo";
+import SidebarLinks from "./SidebarComponents/SidebarLinks";
+import MediaLogo from "./SidebarComponents/MediaLogo";
 
 const Sidebar = () => {
   return (

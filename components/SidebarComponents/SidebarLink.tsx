@@ -1,4 +1,4 @@
-import ISidebarLinkProps from "../../../types/interface";
+import ISidebarLinkProps from "../../types/interface";
 
 const SidebarLink = ({ Icon, text, active }: ISidebarLinkProps) => {
   return (
