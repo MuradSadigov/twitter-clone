@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { ChangeEvent, useRef, useState } from "react";
 import {
   CalendarIcon,
   ChartBarIcon,
@@ -6,10 +6,10 @@ import {
   PhotographIcon,
   XIcon,
 } from "@heroicons/react/outline";
-import EmojiPicker from "emoji-picker-react";
+import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { Theme } from "emoji-picker-react";
-import useAutosizeTextArea from "../../hooks/useAutosizeTextArea";
-import { db, storage } from "../../firebase";
+import useAutosizeTextArea from "../hooks/useAutosizeTextArea";
+import { db, storage } from "../firebase";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import {
   addDoc,
@@ -18,12 +18,18 @@ import {
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
+import { useSession } from "next-auth/react";
+
 
 const Input = () => {
+  const { data: session } = useSession();
+
   const [input, setInput] = useState<string>("");
   const [showEmojis, setShowEmojis] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [selectedFile, setSelectedFile] = useState<string | ArrayBuffer | null>(null);
+  const [selectedFile, setSelectedFile] = useState<string | ArrayBuffer | null>(
+    null
+  );
 
   const filePickerRef = useRef<HTMLInputElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -34,16 +40,27 @@ const Input = () => {
     setLoading(true);
 
     const docRef = await addDoc(collection(db, "posts"), {
-      // id: session.user.uid,
-      // username: session.user.name,
-      // userImg: session.user.image,
-      // tag: session.user.tag,
+      id: session?.user?.uid,
+      username: session?.user?.name,
+      userImg: session?.user?.image,
+      tag: session?.user?.tag,
       text: input,
       timestamp: serverTimestamp(),
     });
     const imageRef = ref(storage, `posts/${docRef.id}/image`);
     if (selectedFile) {
-      await uploadString(imageRef, selectedFile, "data_url").then(async () => {
+      let dataUrl: string;
+      if (typeof selectedFile === "string") {
+        dataUrl = selectedFile;
+      } else {
+        const uint8Array = new Uint8Array(selectedFile);
+        const binaryString = uint8Array.reduce(
+          (str, byte) => str + String.fromCharCode(byte),
+          ""
+        );
+        dataUrl = btoa(binaryString);
+      }
+      await uploadString(imageRef, dataUrl, "data_url").then(async () => {
         const downloadURL = await getDownloadURL(imageRef);
         await updateDoc(doc(db, "posts", docRef.id), {
           image: downloadURL,
@@ -56,7 +73,7 @@ const Input = () => {
     setShowEmojis(false);
   };
 
-  const addEmoji = (e: any) => {
+  const addEmoji = (e: EmojiClickData) => {
     let sym = e.unified.split("-");
     let codesArray: any = [];
     sym.forEach((el: any) => codesArray.push("0x" + el));
@@ -64,24 +81,28 @@ const Input = () => {
     setInput(input + emoji);
   };
 
-  
-  const addImageToPost = (e) => {
+  const addImageToPost = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target || !e.target.files) return;
+
     const reader = new FileReader();
     if (e.target.files[0]) {
       reader.readAsDataURL(e.target.files[0]);
     }
 
     reader.onload = (readerEvent: ProgressEvent<FileReader>) => {
-        setSelectedFile(readerEvent.target.result);
+      if (!readerEvent.target) return;
+      setSelectedFile(readerEvent.target.result);
     };
   };
 
   return (
     <div
-      className={`flex border-b border-gray-700 p-3 space-x-3 ${loading && "opacity-60"}`}
+      className={`flex border-b border-gray-700 p-3 space-x-3 ${
+        loading && "opacity-60"
+      }`}
     >
       <img
-        src="https://cdn-icons-png.flaticon.com/512/3177/3177440.png"
+        src={session?.user?.image}
         className="h-11 w-11 rounded-full cursor-pointer"
       />
       <div className="w-full divide-y divide-gray-700">
@@ -94,7 +115,7 @@ const Input = () => {
             rows={1}
             ref={textAreaRef}
             placeholder="What's happening?"
-            className="bg-transparent outline-none text-[#d9d9d9] text-lg placeholder-gray-500 tracking-wide w-full min-h-[50px] max-h-fit"
+            className="bg-transparent resize-none outline-none text-[#d9d9d9] text-lg placeholder-gray-500 tracking-wide w-full min-h-[50px] max-h-fit"
           />
 
           {selectedFile && (
@@ -115,7 +136,6 @@ const Input = () => {
 
         <div className="flex justify-between items-center pt-2.5">
           <div className="flex items-center">
-            
             <div
               className="icon"
               onClick={() => filePickerRef.current?.click()}
@@ -159,7 +179,6 @@ const Input = () => {
           >
             Tweet
           </button>
-
         </div>
       </div>
     </div>
