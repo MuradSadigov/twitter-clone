@@ -60,6 +60,7 @@ export const Post = ({ id, post, postPage }: any) => {
   useEffect(
     () =>
       setLiked(
+        // @ts-ignore
         likes.findIndex((like: any) => like.id === session?.user?.uid) !== -1
       ),
     [likes]
@@ -67,8 +68,10 @@ export const Post = ({ id, post, postPage }: any) => {
 
   const likePost = async () => {
     if (liked) {
+       // @ts-ignore
       await deleteDoc(doc(db, "posts", id, "likes", session?.user?.uid));
     } else {
+       // @ts-ignore
       await setDoc(doc(db, "posts", id, "likes", session?.user?.uid), {
         username: session?.user?.name,
       });
@@ -157,8 +160,9 @@ export const Post = ({ id, post, postPage }: any) => {
               </span>
             )}
           </div>
-
-          {session?.user?.uid === post?.id ? (
+          
+          { // @ts-ignore
+          session?.user?.uid === post?.id ? (
             <div
               className="flex items-center space-x-1 group"
               onClick={(e) => {

@@ -43,6 +43,7 @@ function Modal() {
     await addDoc(collection(db, "posts", postId, "comments"), {
       comment: comment,
       username: session?.user?.name,
+       // @ts-ignore
       tag: session?.user?.tag,
       userImg: session?.user?.image,
       timestamp: serverTimestamp(),

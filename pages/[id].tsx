@@ -22,7 +22,7 @@ import Login from "../components/Login";
 function PostPage({ providers }: any) {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useRecoilState(modalState);
-  const [post, setPost] = useState();
+  const [post, setPost] = useState<any>();
   const [comments, setComments] = useState([]);
   const router = useRouter();
   const { id } = router.query;
@@ -42,7 +42,7 @@ function PostPage({ providers }: any) {
           collection(db, "posts", id as string, "comments"),
           orderBy("timestamp", "desc")
         ),
-        (snapshot): any => setComments(snapshot?.docs)
+        (snapshot: any) => setComments(snapshot?.docs)
       ),
     [db, id]
   );

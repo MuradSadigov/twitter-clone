@@ -20,7 +20,6 @@ import {
 } from "firebase/firestore";
 import { useSession } from "next-auth/react";
 
-
 const Input = () => {
   const { data: session } = useSession();
 
@@ -38,11 +37,12 @@ const Input = () => {
   const sendPost = async () => {
     if (loading) return;
     setLoading(true);
-
     const docRef = await addDoc(collection(db, "posts"), {
+       // @ts-ignore
       id: session?.user?.uid,
       username: session?.user?.name,
       userImg: session?.user?.image,
+       // @ts-ignore
       tag: session?.user?.tag,
       text: input,
       timestamp: serverTimestamp(),
@@ -102,7 +102,7 @@ const Input = () => {
       }`}
     >
       <img
-        src={session?.user?.image}
+        src={session?.user?.image as string}
         className="h-11 w-11 rounded-full cursor-pointer"
       />
       <div className="w-full divide-y divide-gray-700">

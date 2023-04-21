@@ -16,7 +16,7 @@ const Feed = () => {
       ),
     [db]
   );
-  console.log(posts);
+  
   return (
     <div
       className="text-white flex-grow border-l border-r max-w-2xl border-gray-700

@@ -12,7 +12,7 @@ const Login = ({ providers }: any) => {
         height={250}
       />
       <div>
-        {Object.values(providers).map((provider) => (
+        {Object.values(providers).map((provider: any) => (
           <div key={provider.name}>
             <button
               type="button"
