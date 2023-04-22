@@ -15,8 +15,6 @@ import {
 } from '@heroicons/react/solid'
 import { useSession } from 'next-auth/react'
 import Moment from 'react-moment'
-import { useRecoilState } from 'recoil'
-import { modalState, postIdState } from '../atoms/modalAtom'
 import { useRouter } from 'next/router'
 import {
   collection,
@@ -28,11 +26,16 @@ import {
   setDoc
 } from 'firebase/firestore'
 import { db } from '../../firebase'
+import { useDispatch, useSelector } from 'react-redux'
+import { setIsOpen } from '../store/modalSlice'
+import { setPost, setPostId } from '../store/postSlice'
 
 export const Post = ({ id, post, postPage }) => {
   const { data: session } = useSession()
-  const [isOpen, setIsOpen] = useRecoilState(modalState)
-  const [postId, setPostId] = useRecoilState(postIdState)
+  const isOpen = useSelector(state => state.modal.isOpen)
+  const postId = useSelector(state => state.post.id)
+  const dispatch = useDispatch()
+
   const [comments, setComments] = useState([])
   const [liked, setLiked] = useState(false)
   const [likes, setLikes] = useState([])
@@ -145,8 +148,8 @@ export const Post = ({ id, post, postPage }) => {
             className="flex items-center space-x-1 group"
             onClick={(e) => {
               e.stopPropagation()
-              setPostId(id)
-              setIsOpen(true)
+              dispatch(setPostId(id))
+              dispatch(setIsOpen(true))
             }}
           >
             <div className="icon group-hover:bg-[#1d9bf0] group-hover:bg-opacity-10">

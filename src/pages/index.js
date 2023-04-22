@@ -5,12 +5,12 @@ import Sidebar from '../components/Sidebar'
 import { getProviders, getSession, useSession } from 'next-auth/react'
 import Login from '../components/Login'
 import Modal from '../components/Modal'
-import { useRecoilState } from 'recoil'
-import { modalState } from '../atoms/modalAtom'
+import { useDispatch, useSelector } from 'react-redux'
 
 export default function Home ({ trendingResults, providers, followResults }) {
   const { data: session } = useSession()
-  const [isOpen, setIsOpen] = useRecoilState(modalState)
+  const isOpen = useSelector(state => state.modal.isOpen)
+  const dispatch = useDispatch()
   if (!session) return <Login providers={providers}/>
 
   return (

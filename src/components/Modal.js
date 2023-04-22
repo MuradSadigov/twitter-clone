@@ -1,6 +1,4 @@
 /* eslint-disable no-unused-vars */
-import { useRecoilState } from 'recoil'
-import { modalState, postIdState } from '../atoms/modalAtom'
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useEffect, useState } from 'react'
 import {
@@ -21,11 +19,14 @@ import {
 } from '@heroicons/react/outline'
 import { useRouter } from 'next/router'
 import Moment from 'react-moment'
+import { useDispatch, useSelector } from 'react-redux'
+import { setIsOpen } from '../store/modalSlice'
 
 function Modal () {
   const { data: session } = useSession()
-  const [isOpen, setIsOpen] = useRecoilState(modalState)
-  const [postId, setPostId] = useRecoilState(postIdState)
+  const isOpen = useSelector(state => state.modal.isOpen)
+  const postId = useSelector(state => state.post.id)
+  const dispatch = useDispatch()
   const [post, setPost] = useState()
   const [comment, setComment] = useState('')
   const router = useRouter()
@@ -48,8 +49,7 @@ function Modal () {
       userImg: session?.user?.image,
       timestamp: serverTimestamp()
     })
-
-    setIsOpen(false)
+    dispatch(setIsOpen(false))
     setComment('')
 
     router.push(`/${postId}`)
@@ -84,7 +84,7 @@ function Modal () {
               <div className="flex items-center px-1.5 py-2 border-b border-gray-700">
                 <div
                   className="hoverAnimation w-9 h-9 flex items-center justify-center xl:px-0"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => dispatch(setIsOpen(false))}
                 >
                   <XIcon className="h-[22px] text-white" />
                 </div>
